@@ -21,19 +21,28 @@ const winConditions = (() => {
   return combinations
 });
 
-const PlayerOne = (() => {
-  const currentPicks = []
-  return currentPicks
-});
+const PlayerOne = {
+  currentPicks: (() => {
+    const newBoard = []
+    return newBoard
+  })(),
+  getPicks: () => PlayerOne.currentPicks
+};
 
-const PlayerTwo = (() => {
-  const currentPicks = []
-  return currentPicks
-});
+
+const PlayerTwo = {
+  currentPicks: (() => {
+    const newBoard = []
+    return newBoard
+  })(),
+  getPicks: () => PlayerTwo.currentPicks
+};
 
 const makeMove = ((spot, player) => {
-  let newSpot = spot
-  return player
+  Gameboard.currentBoard[spot] = player
+  if (player === 0) {PlayerOne.currentPicks.push(spot)}
+  else if (player === 1) {PlayerTwo.currentPicks.push(spot)}
+  return Gameboard.getBoard()
 });
 
 const gameDirector = (() => {

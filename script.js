@@ -1,12 +1,12 @@
 const Gameboard =  (() => {
   const currentBoard = (() => {
     const newBoard = []
-    for (let i = 0; i < 9; i++) {newBoard.push(null)}
+    for (let i = 0; i < 9; i++) { newBoard.push(null) }
     return newBoard
   })();
-  function getBoard() {return currentBoard}
+  function getBoard() { return currentBoard }
   function addMove(spot, player) {
-    currentBoard[spot] = player.index;
+    currentBoard[spot] = player.getIndex();
   }
   return {
     getBoard,
@@ -27,7 +27,7 @@ const GameDirector = (() => {
   ];
   let legalMove = 0;
   function makeMove(spot, player){
-    if (player.index !== legalMove) {console.log("Illegal move: Not your turn"); return}
+    if (player.getIndex() !== legalMove) {console.log("Illegal move: Not your turn"); return}
     if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
     Gameboard.addMove(spot,player)
     player.addPick(spot)
@@ -53,14 +53,14 @@ const GameDirector = (() => {
 })();
 
 function playerFactory(index){
+  const currentPicks = (() => {
+    const newBoard = []
+    return newBoard
+  })();
   return {
-    index: index,
-    currentPicks: (() => {
-      const newBoard = []
-      return newBoard
-    })(),
-    getPicks() { return this.currentPicks },
-    addPick(spot) { this.currentPicks.push(spot) }
+    getPicks() { return currentPicks },
+    addPick(spot) { currentPicks.push(spot) },
+    getIndex() { return index }
   }
 }
 

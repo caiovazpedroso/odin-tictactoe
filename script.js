@@ -5,7 +5,9 @@ const Gameboard =  (() => {
     return newBoard
   })();
   function getBoard() {return currentBoard}
-  function addMove(spot, player) {currentBoard[spot] = player.index}
+  function addMove(spot, player) {
+    currentBoard[spot] = player.index;
+  }
   return {
     getBoard,
     addMove
@@ -26,11 +28,18 @@ const GameDirector = (() => {
   function makeMove(spot, player){
     Gameboard.addMove(spot,player)
     player.addPick(spot)
+    GameDirector.checkWin(player)
     return Gameboard.getBoard()
   };
   function checkWin(player){
-    if (player.currentPicks === winConditions) {
-      return null
+    const isSubset = (array1, array2) => {
+      return array2.every((element) => array1.includes(element));
+    };
+    const sortedPlayer = player.getPicks().toSorted();
+    for (let x of winConditions) {
+      if (isSubset(sortedPlayer, x)){
+        return console.log("Game ended")
+      }
     }
   }
   return {

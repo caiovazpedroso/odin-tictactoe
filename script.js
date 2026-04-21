@@ -27,13 +27,13 @@ const GameDirector = (() => {
   ];
   let legalMove = 0;
   function makeMove(spot, player){
-    if (player.index === legalMove) {
-      Gameboard.addMove(spot,player)
-      player.addPick(spot)
-      GameDirector.checkWin(player)
-      legalMove = 1 - legalMove;
-      return Gameboard.getBoard()
-    } else { console.log("Illegal move")}
+    if (player.index !== legalMove) {console.log("Illegal move: Not your turn"); return}
+    if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
+    Gameboard.addMove(spot,player)
+    player.addPick(spot)
+    GameDirector.checkWin(player)
+    legalMove = 1 - legalMove;
+    return Gameboard.getBoard()
   };
   function checkWin(player){
     const isSubset = (array1, array2) => {

@@ -41,6 +41,7 @@ const GameDirector = (() => {
     if (!GameDirector.checkWin(player)){
       allowedPlayerIndex = 1 - allowedPlayerIndex;
     }
+    checkTie();
     return Gameboard.getBoard()
   };
   function checkWin(player){
@@ -52,11 +53,16 @@ const GameDirector = (() => {
       if (isSubset(sortedPlayer, x)){
         alert(`${player.getName()} has won.`)
         GameDirector.resetGame()
-        console.log("Game ended")
         return true
       }
     }
     return false
+  }
+  function checkTie(){
+    if (!Gameboard.getBoard().includes(null)) {
+      alert(`Game is a tie.`)
+      GameDirector.resetGame()
+    }
   }
   function resetGame(){
     Gameboard.resetBoard()

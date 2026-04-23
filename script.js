@@ -17,8 +17,8 @@ const Gameboard =  (() => {
   }
 })();
 
-const GameDirector = (() => {
-  function playerFactory(index){
+const GameController = (() => {
+  function createPlayer(index){
     let currentPicks = (() => {
       const newBoard = []
       return newBoard
@@ -33,8 +33,8 @@ const GameDirector = (() => {
   }
 
   const players = [
-    playerFactory(0),
-    playerFactory(1)
+    createPlayer(0),
+    createPlayer(1)
   ]
 
   const winConditions = [ 
@@ -88,10 +88,16 @@ const GameDirector = (() => {
     for (const p of players) {p.resetPicks()}
     allowedPlayerIndex = 0
   };
-  
+
   return {
     players,
     resetGame,
     makeMove
+  }
+})();
+
+const DisplayController = (() => {
+  function renderBoard(){
+    return
   }
 })();

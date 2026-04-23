@@ -18,10 +18,25 @@ const Gameboard =  (() => {
 })();
 
 const GameDirector = (() => {
+  function playerFactory(index){
+    let currentPicks = (() => {
+      const newBoard = []
+      return newBoard
+    })();
+    return {
+      getName() {return `Player ${this.getIndex() + 1}`},
+      getPicks() { return currentPicks },
+      addPick(spot) { currentPicks.push(spot) },
+      getIndex() { return index },
+      resetPicks() { currentPicks = []}
+    }
+  }
+
   const players = [
     playerFactory(0),
     playerFactory(1)
   ]
+
   const winConditions = [ 
     [0, 1, 2],
     [0, 3, 6],
@@ -32,6 +47,7 @@ const GameDirector = (() => {
     [3, 4, 5],
     [6, 7, 8]
   ];
+
   let allowedPlayerIndex = 0;
   function makeMove(spot, player){
     if (player.getIndex() !== allowedPlayerIndex) {console.log("Illegal move: Not your turn"); return}
@@ -41,14 +57,14 @@ const GameDirector = (() => {
     if (checkWin(player)) {return}
     if (checkTie()) {return}
     allowedPlayerIndex = 1 - allowedPlayerIndex;
-    return Gameboard.getBoard()
   };
+
   function checkWin(player){
     const isSubset = (array1, array2) => {
       return array2.every((element) => array1.includes(element));
     };
     const sortedPlayer = player.getPicks().toSorted();
-    for (let x of winConditions) {
+    for (const x of winConditions) {
       if (isSubset(sortedPlayer, x)){
         alert(`${player.getName()} has won.`)
         resetGame()
@@ -56,7 +72,8 @@ const GameDirector = (() => {
       }
     }
     return false
-  }
+  };
+
   function checkTie(){
     if (!Gameboard.getBoard().includes(null)) {
       alert(`Game is a tie.`)
@@ -64,30 +81,17 @@ const GameDirector = (() => {
       return true
     }
     return false
-  }
+  };
+
   function resetGame(){
     Gameboard.resetBoard()
     for (const p of players) {p.resetPicks()}
     allowedPlayerIndex = 0
-  }
+  };
+  
   return {
     players,
     resetGame,
-    makeMove,
-    checkWin
+    makeMove
   }
 })();
-
-function playerFactory(index){
-  let currentPicks = (() => {
-    const newBoard = []
-    return newBoard
-  })();
-  return {
-    getName() {return `Player ${this.getIndex() + 1}`},
-    getPicks() { return currentPicks },
-    addPick(spot) { currentPicks.push(spot) },
-    getIndex() { return index },
-    resetPicks() { currentPicks = []}
-  }
-}

@@ -1,20 +1,27 @@
 const Gameboard =  (() => {
-  const currentBoard = (() => {
+  function newBoard() {
     const newBoard = []
     for (let i = 0; i < 9; i++) { newBoard.push(null) }
     return newBoard
-  })();
+  }
+  let currentBoard = ( newBoard() );
   function getBoard() { return currentBoard }
   function addMove(spot, player) {
     currentBoard[spot] = player.getIndex();
   }
+  function resetBoard() { currentBoard = newBoard() }
   return {
+    resetBoard,
     getBoard,
     addMove
   }
 })();
 
 const GameDirector = (() => {
+  const players = [
+    playerFactory(0),
+    playerFactory(1)
+  ]
   const winConditions = [ 
     [0, 1, 2],
     [0, 3, 6],
@@ -25,14 +32,15 @@ const GameDirector = (() => {
     [3, 4, 5],
     [6, 7, 8]
   ];
-  let legalMove = 0;
+  let allowedPlayerIndex = 0;
   function makeMove(spot, player){
-    if (player.getIndex() !== legalMove) {console.log("Illegal move: Not your turn"); return}
+    if (player.getIndex() !== allowedPlayerIndex) {console.log("Illegal move: Not your turn"); return}
     if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
     Gameboard.addMove(spot,player)
     player.addPick(spot)
-    GameDirector.checkWin(player)
-    legalMove = 1 - legalMove;
+    if (!GameDirector.checkWin(player)){
+      allowedPlayerIndex = 1 - allowedPlayerIndex;
+    }
     return Gameboard.getBoard()
   };
   function checkWin(player){
@@ -42,27 +50,37 @@ const GameDirector = (() => {
     const sortedPlayer = player.getPicks().toSorted();
     for (let x of winConditions) {
       if (isSubset(sortedPlayer, x)){
-        return console.log("Game ended")
+        alert(`${player.getName()} has won.`)
+        GameDirector.resetGame()
+        console.log("Game ended")
+        return true
       }
     }
+    return false
+  }
+  function resetGame(){
+    Gameboard.resetBoard()
+    for (const p of players) {p.resetPicks()}
+    allowedPlayerIndex = 0
   }
   return {
+    players,
+    resetGame,
     makeMove,
     checkWin
   }
 })();
 
 function playerFactory(index){
-  const currentPicks = (() => {
+  let currentPicks = (() => {
     const newBoard = []
     return newBoard
   })();
   return {
+    getName() {return `Player ${this.getIndex() + 1}`},
     getPicks() { return currentPicks },
     addPick(spot) { currentPicks.push(spot) },
-    getIndex() { return index }
+    getIndex() { return index },
+    resetPicks() { currentPicks = []}
   }
 }
-
-let PlayerOne = playerFactory(0);
-let PlayerTwo = playerFactory(1);

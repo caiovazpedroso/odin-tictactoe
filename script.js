@@ -38,10 +38,9 @@ const GameDirector = (() => {
     if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
     Gameboard.addMove(spot,player)
     player.addPick(spot)
-    if (!GameDirector.checkWin(player)){
-      allowedPlayerIndex = 1 - allowedPlayerIndex;
-    }
-    checkTie();
+    if (checkWin(player)) {return}
+    if (checkTie()) {return}
+    allowedPlayerIndex = 1 - allowedPlayerIndex;
     return Gameboard.getBoard()
   };
   function checkWin(player){
@@ -52,7 +51,7 @@ const GameDirector = (() => {
     for (let x of winConditions) {
       if (isSubset(sortedPlayer, x)){
         alert(`${player.getName()} has won.`)
-        GameDirector.resetGame()
+        resetGame()
         return true
       }
     }
@@ -61,8 +60,10 @@ const GameDirector = (() => {
   function checkTie(){
     if (!Gameboard.getBoard().includes(null)) {
       alert(`Game is a tie.`)
-      GameDirector.resetGame()
+      resetGame()
+      return true
     }
+    return false
   }
   function resetGame(){
     Gameboard.resetBoard()

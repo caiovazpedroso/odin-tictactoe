@@ -24,11 +24,11 @@ const GameController = (() => {
       return newBoard
     })();
     return {
-      getName() {return `Player ${this.getIndex() + 1}`},
+      getName() { return `Player ${this.getIndex() + 1}` },
       getPicks() { return currentPicks },
       addPick(spot) { currentPicks.push(spot) },
       getIndex() { return index },
-      resetPicks() { currentPicks = []}
+      resetPicks() { currentPicks = [] }
     }
   }
 
@@ -48,15 +48,19 @@ const GameController = (() => {
     [6, 7, 8]
   ];
 
-  let allowedPlayerIndex = 0;
+  let currentPlayerIndex = 0;
   function makeMove(spot, player){
-    if (player.getIndex() !== allowedPlayerIndex) {console.log("Illegal move: Not your turn"); return}
+    console.log(`makeMove start${currentPlayerIndex}`)
+    if (player.getIndex() !== currentPlayerIndex) {console.log("Illegal move: Not your turn"); return}
     if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
+    currentPlayerIndex = 1 - currentPlayerIndex;
+    console.log(`makeMove mid${currentPlayerIndex}`)
     Gameboard.addMove(spot,player)
     player.addPick(spot)
     if (checkWin(player)) {return}
     if (checkTie()) {return}
-    allowedPlayerIndex = 1 - allowedPlayerIndex;
+    DisplayController.renderBoard()
+    console.log("oi",spot,player.getIndex(), currentPlayerIndex)
   };
 
   function checkWin(player){
@@ -83,21 +87,68 @@ const GameController = (() => {
     return false
   };
 
+  function getCurrentPlayerIndex(){
+    return currentPlayerIndex
+  }
+
+  function getPlayers(){
+    return players
+  }
+
   function resetGame(){
     Gameboard.resetBoard()
-    for (const p of players) {p.resetPicks()}
-    allowedPlayerIndex = 0
+    for (const p of getPlayers()) {p.resetPicks()}
+    currentPlayerIndex = 0
+    DisplayController.renderBoard()
   };
 
   return {
-    players,
+    getCurrentPlayerIndex,
+    getPlayers,
     resetGame,
     makeMove
   }
 })();
 
 const DisplayController = (() => {
+  const UI = {
+    gameBox: document.querySelector("#game-box"),
+    playerDisplay: document.querySelector("#player-display"),
+  }
+
   function renderBoard(){
-    return
+    UI.gameBox.textContent = ''
+    for (let i = 0; i < Gameboard.getBoard().length; i++){
+      console.log(`Player index ${GameController.getCurrentPlayerIndex()}`)
+      let element = Gameboard.getBoard()[i]
+      let newSpot = document.createElement("div");
+      if (element === null) {
+        newSpot.classList.add("empty-spot")
+      } 
+      else if (element === 0) {
+        newSpot.classList.add("player-one")
+      }
+      else if (element === 1) {
+        newSpot.classList.add("player-two")
+      }           
+      
+      console.log(`render loop index ${i}`)
+      newSpot.addEventListener("click", () => {
+        GameController.makeMove(i, GameController.getPlayers()[GameController.getCurrentPlayerIndex()])
+      })
+      UI.gameBox.append(newSpot)
+    }
+    UI.playerDisplay.textContent = `Player ${GameController.getCurrentPlayerIndex() + 1}`
+  }
+
+  function updateBoard(){
+
+  }
+
+  return {
+    UI,
+    renderBoard,
   }
 })();
+
+DisplayController.renderBoard()

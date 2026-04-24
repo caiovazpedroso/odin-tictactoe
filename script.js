@@ -23,12 +23,16 @@ const GameController = (() => {
       const newBoard = []
       return newBoard
     })();
+    let score = 0;
     return {
       getName() { return `Player ${this.getIndex() + 1}` },
       getPicks() { return currentPicks },
       addPick(spot) { currentPicks.push(spot) },
       getIndex() { return index },
-      resetPicks() { currentPicks = [] }
+      resetPicks() { currentPicks = [] },
+      getSymbol() {if (getIndex() === 0) return "X"; else return "O"},
+      getScore() {return score},
+      addWin() {score += 1}
     }
   }
 
@@ -50,17 +54,11 @@ const GameController = (() => {
 
   let currentPlayerIndex = 0;
   function makeMove(spot, player){
-    console.log(`makeMove start${currentPlayerIndex}`)
-    if (player.getIndex() !== currentPlayerIndex) {console.log("Illegal move: Not your turn"); return}
-    if (Gameboard.getBoard()[spot]!== null) {console.log("Illegal move: Space occupied"); return}
-    currentPlayerIndex = 1 - currentPlayerIndex;
-    console.log(`makeMove mid${currentPlayerIndex}`)
+    if (player.getIndex() !== currentPlayerIndex) {DisplayController.openGameDialog("Illegal move: Not your turn"); return}
+    if (Gameboard.getBoard()[spot]!== null) {DisplayController.openGameDialog("Illegal move: Space occupied"); return}
     Gameboard.addMove(spot,player)
-    player.addPick(spot)
-    if (checkWin(player)) {return}
-    if (checkTie()) {return}
-    DisplayController.renderBoard()
-    console.log("oi",spot,player.getIndex(), currentPlayerIndex)
+    player.addPick(spot)    
+    heartbeat()
   };
 
   function checkWin(player){
@@ -70,7 +68,8 @@ const GameController = (() => {
     const sortedPlayer = player.getPicks().toSorted();
     for (const x of winConditions) {
       if (isSubset(sortedPlayer, x)){
-        alert(`${player.getName()} has won.`)
+        player.addWin()
+        DisplayController.openGameDialog(`${player.getName()} has won.`)
         resetGame()
         return true
       }
@@ -80,7 +79,7 @@ const GameController = (() => {
 
   function checkTie(){
     if (!Gameboard.getBoard().includes(null)) {
-      alert(`Game is a tie.`)
+      DisplayController.openGameDialog(`Game is a tie.`)
       resetGame()
       return true
     }
@@ -95,11 +94,19 @@ const GameController = (() => {
     return players
   }
 
+  function heartbeat(){
+    DisplayController.renderBoard()
+    if (checkTie()) return
+    if (checkWin(players[currentPlayerIndex])) return
+    currentPlayerIndex = 1 - currentPlayerIndex;
+  }
+
   function resetGame(){
     Gameboard.resetBoard()
     for (const p of getPlayers()) {p.resetPicks()}
     currentPlayerIndex = 0
     DisplayController.renderBoard()
+    DisplayController.updateScore()
   };
 
   return {
@@ -112,14 +119,26 @@ const GameController = (() => {
 
 const DisplayController = (() => {
   const UI = {
+    dialogBox: document.querySelector("#dialog-box"),
+    dialogText: document.querySelector("#dialog-text"),
+    dialogClose: document.querySelector("#dialog-close"),
     gameBox: document.querySelector("#game-box"),
     playerDisplay: document.querySelector("#player-display"),
+    playerOneScore: document.querySelector("#player-one-score"),
+    playerTwoScore: document.querySelector("#player-two-score"),
+    changeNameOne: document.querySelector("#change-name-one"),
+    changeNameTwo: document.querySelector("#change-name-two"),
+    dialogOne: document.querySelector("#dialog-one"),
+    dialogTwo: document.querySelector("#dialog-two"),
   }
+
+  UI.dialogClose.addEventListener("click", () => UI.dialogBox.close());
+  UI.changeNameOne.addEventListener("click", () => UI.dialogOne.showModal());
+  UI.changeNameTwo.addEventListener("click", () => UI.dialogTwo.showModal());
 
   function renderBoard(){
     UI.gameBox.textContent = ''
     for (let i = 0; i < Gameboard.getBoard().length; i++){
-      console.log(`Player index ${GameController.getCurrentPlayerIndex()}`)
       let element = Gameboard.getBoard()[i]
       let newSpot = document.createElement("div");
       if (element === null) {
@@ -127,12 +146,37 @@ const DisplayController = (() => {
       } 
       else if (element === 0) {
         newSpot.classList.add("player-one")
+        newSpot.textContent = "X"
       }
       else if (element === 1) {
         newSpot.classList.add("player-two")
-      }           
-      
-      console.log(`render loop index ${i}`)
+        newSpot.textContent = "O"
+      }    
+      newSpot.addEventListener("mouseenter", () => {
+        if (newSpot.className === "empty-spot") {
+          newSpot.classList.remove("empty-spot")
+          if (GameController.getCurrentPlayerIndex() === 0) {
+            newSpot.classList.add("hover-player-one")
+            newSpot.textContent = "X"
+            newSpot.style.opacity = 0.2
+          } else {
+            newSpot.classList.add("hover-player-two")
+            newSpot.textContent = "O"
+            newSpot.style.opacity = 0.2
+          }
+        //newSpot.textContent = `Player ${GameController.getCurrentPlayerIndex()}`
+        }
+      })
+      newSpot.addEventListener("mouseleave", () => {
+        if (newSpot.className === "hover-player-one" | newSpot.className === "hover-player-two") {
+          newSpot.textContent = ''
+          newSpot.classList.remove("hover-player-one")
+          newSpot.classList.remove("hover-player-two")
+          newSpot.classList.add("empty-spot")
+          newSpot.style.opacity = 1
+        }
+        //newSpot.textContent = ''
+      })
       newSpot.addEventListener("click", () => {
         GameController.makeMove(i, GameController.getPlayers()[GameController.getCurrentPlayerIndex()])
       })
@@ -141,14 +185,23 @@ const DisplayController = (() => {
     UI.playerDisplay.textContent = `Player ${GameController.getCurrentPlayerIndex() + 1}`
   }
 
-  function updateBoard(){
-
+  function openGameDialog(text){
+    UI.dialogText.textContent = text
+    UI.dialogBox.showModal()
   }
 
+  function updateScore(){
+    UI.playerOneScore.textContent = GameController.getPlayers()[0].getScore(),
+    UI.playerTwoScore.textContent = GameController.getPlayers()[1].getScore()
+  }
+
+  
+  
+  renderBoard()
+  
   return {
-    UI,
+    updateScore,
+    openGameDialog,
     renderBoard,
   }
 })();
-
-DisplayController.renderBoard()

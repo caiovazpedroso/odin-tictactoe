@@ -1,43 +1,136 @@
 * {
-margin: 0;
-padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
-html {
--webkit-text-size-adjust: 100%;
-}
-
+html,
 body {
-min-height: 100vh;
-line-height: 1.5;
-font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
-text-rendering: optimizeLegibility;
+    background-color: #0f172a;
+    color: #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    height: 100%
+}
+
+#header,
+#footer{
+    width: 100%;
+    padding: 20px;
+    margin: 0;
+    background-color: #111827;
+    min-height: 3%
+}
+
+#body{ 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+#title{
+    font-size: 40px;
+    font-weight: 800;
 }
 
 #game-box{
-    padding: 20px;
+    width: fit-content;
+    border: 8px solid #374151;
+    border-radius: 6px;
+    padding: 8px;
     display: grid;
     gap: 4px;
     grid-template-columns: repeat(3, max-content);
 }
 
+#dialog-box[open]{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    justify-content: space-between;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+}
+
+#dialog-close{
+    justify-self: center;
+    width: fit-content
+}
+
 .empty-spot{
-    background-color: gainsboro;
+    background-color: #1f2933;
     width: 200px;
     height: 200px;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
 }
 
-.player-one{
+.player-one, 
+.player-two,
+.hover-player-one,
+.hover-player-two{
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    width: 200px;
+    height: 200px;
+    font-weight: 800;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+}
+
+.player-one,
+.hover-player-one {
     background-color: lightblue;
-    width: 200px;
-    height: 200px;
-
 }
 
-.player-two{
+.player-two,
+.hover-player-two{
     background-color: lightcoral;
-    width: 200px;
-    height: 200px;
-
 }
+
+#scoreboard{
+    padding: 20 0px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#board-player-one,
+#board-player-two{
+    flex: 1;
+    background-color: #374151;
+    width: 50%;
+}
+
+#player-title{
+    font-size: 12px;
+    font-style: italic;
+}
+
+#player-card{
+    display: flex;
+    align-items: center;
+}
+
+.name{
+    flex: 1;
+    font-size: 50px;
+    font-weight: 800;
+}
+
+.score{
+    flex: 0.5;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+
+/* { outline: auto}

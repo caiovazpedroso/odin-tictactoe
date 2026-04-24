@@ -17,35 +17,39 @@
             <div id="dialog-text"></div>
             <button id="dialog-close">Close</button>
         </dialog>
-        <div id="game-box"></div>
-        <div id="scoreboard">
-            <div id="board-player-one">
-                <dialog id="dialog-one">
-                    <form class="one-name" method="dialog">
-                        <input type="text" class="one-name" required autofocus>
-                    </form>
-                </dialog>
-                <div id="player-title">Player 1</div>
-                <div id="player-card">
-                    <div class="name">NAME</div>
-                    <button id="change-name-one"></button>
-                    <div class="score" id="player-one-score">0</div>
+        <div id="game-area">
+            <div id="game-box"></div>
+            <div id="scoreboard">
+                <div class="player-card" id="player-one">
+                    <dialog class="dialog-name">
+                        <form id="name-form" method="dialog">
+                            <input type="text" class="input-name-one" required autofocus>
+                            <button type="submit" value="confirm">Confirm</button>
+                        </form>
+                    </dialog>
+                    <div class="player-title">Player 1</div>
+                    <div class="player-info">
+                        <div class="player-name">NAME</div>
+                        <div class="edit-name">✏️</div>
+                        <div class="player-score">0</div>
+                    </div>
                 </div>
-            </div>
-            <div id="board-player-two">
-                <dialog id="dialog-two">
-                    <form class="two-name" method="dialog">
-                        <input type="text" class="two-name" required autofocus>
-                    </form>
-                </dialog>
-                <div id="player-title">Player 2</div>
-                <div id="player-card">
-                    <div class="name">NAME</div>
-                    <button id="change-name-two"></button>
-                    <div class="score" id="player-two-score">0</div>
+                <div class="player-card" id="player-two">
+                    <dialog class="dialog-name">
+                        <form id="name-form" method="dialog">
+                            <input type="text" class="input-name-two" required autofocus>
+                            <button type="submit" value="confirm">Confirm</button>
+                        </form>
+                    </dialog>
+                    <div class="player-title">Player 2</div>
+                    <div class="player-info">
+                        <div class="player-score">0</div>
+                        <div class="edit-name">✏️</div>
+                        <div class="player-name">NAME</div>
+                    </div>
                 </div>
-            </div>
-        </div> 
+            </div> 
+        </div>
         <div id="player-display"></div>   
     </div>
     <div id="footer">    

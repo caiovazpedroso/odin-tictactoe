@@ -36,6 +36,13 @@ body {
     font-weight: 800;
 }
 
+#game-area{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    gap: 8px;
+}
+
 #game-box{
     width: fit-content;
     border: 8px solid #374151;
@@ -60,6 +67,17 @@ body {
 #dialog-close{
     justify-self: center;
     width: fit-content
+}
+
+.dialog-name[open]{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    justify-content: space-between;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
 }
 
 .empty-spot{
@@ -96,41 +114,62 @@ body {
     background-color: lightcoral;
 }
 
+.edit-name{
+    font-size: 10px;
+}
+
 #scoreboard{
+    gap: 4px;
     padding: 20 0px;
     display: flex;
     justify-content: space-between;
 }
 
-#board-player-one,
-#board-player-two{
+#player-two,
+#player-two > * {
+    text-align: right;
+    align-items: right;
+}
+
+.player-card{
+    border-radius: 6px;
+    padding: 8px;
     flex: 1;
     background-color: #374151;
     width: 50%;
+    
 }
 
-#player-title{
+.player-title{
     font-size: 12px;
     font-style: italic;
 }
 
-#player-card{
+.player-info{
     display: flex;
     align-items: center;
 }
 
-.name{
+.player-name{
     flex: 1;
     font-size: 50px;
     font-weight: 800;
 }
 
-.score{
+.player-score{
     flex: 0.5;
     text-align: center;
-    font-size: 25px;
+    font-size: 50px;
     font-weight: 800;
 }
 
+
+#player-one .player-score{
+    color:lightblue
+}
+
+#player-two .player-score{
+    color:lightcoral
+}
 
 /* { outline: auto}

@@ -24,8 +24,11 @@ const GameController = (() => {
       return newBoard
     })();
     let score = 0;
+    let name = "";
     return {
-      getName() { return `Player ${this.getIndex() + 1}` },
+      changeName(str) { name = str; },
+      getName() { return (name === "") ? "NAME" : name },
+      getTitle() { return `Player ${this.getIndex() + 1}` },
       getPicks() { return currentPicks },
       addPick(spot) { currentPicks.push(spot) },
       getIndex() { return index },
@@ -54,8 +57,14 @@ const GameController = (() => {
 
   let currentPlayerIndex = 0;
   function makeMove(spot, player){
-    if (player.getIndex() !== currentPlayerIndex) {DisplayController.openGameDialog("Illegal move: Not your turn"); return}
-    if (Gameboard.getBoard()[spot]!== null) {DisplayController.openGameDialog("Illegal move: Space occupied"); return}
+    if (player.getIndex() !== currentPlayerIndex) {
+      DisplayController.openGameDialog("Illegal move: Not your turn")
+      return
+    }
+    if (Gameboard.getBoard()[spot]!== null) {
+      DisplayController.openGameDialog("Illegal move: Space occupied") 
+      return
+    }
     Gameboard.addMove(spot,player)
     player.addPick(spot)    
     heartbeat()
@@ -69,6 +78,8 @@ const GameController = (() => {
     for (const x of winConditions) {
       if (isSubset(sortedPlayer, x)){
         player.addWin()
+        player.getName() === "NAME" ? 
+        DisplayController.openGameDialog(`${player.getTitle()} has won.`) : 
         DisplayController.openGameDialog(`${player.getName()} has won.`)
         resetGame()
         return true
@@ -106,7 +117,7 @@ const GameController = (() => {
     for (const p of getPlayers()) {p.resetPicks()}
     currentPlayerIndex = 0
     DisplayController.renderBoard()
-    DisplayController.updateScore()
+    DisplayController.updatePlayerCards()
   };
 
   return {
@@ -123,18 +134,24 @@ const DisplayController = (() => {
     dialogText: document.querySelector("#dialog-text"),
     dialogClose: document.querySelector("#dialog-close"),
     gameBox: document.querySelector("#game-box"),
-    playerDisplay: document.querySelector("#player-display"),
-    playerOneScore: document.querySelector("#player-one-score"),
-    playerTwoScore: document.querySelector("#player-two-score"),
-    changeNameOne: document.querySelector("#change-name-one"),
-    changeNameTwo: document.querySelector("#change-name-two"),
-    dialogOne: document.querySelector("#dialog-one"),
-    dialogTwo: document.querySelector("#dialog-two"),
+    playerOneName: document.querySelector("#player-one .player-name"),
+    playerTwoName: document.querySelector("#player-two .player-name"),
+    playerOneScore: document.querySelector("#player-one .player-score"),
+    playerTwoScore: document.querySelector("#player-two .player-score"),
+    dialogPlayerOne: document.querySelector("#player-one .dialog-name"),
+    dialogPlayerTwo: document.querySelector("#player-two .dialog-name"),
+    buttonPlayerOne: document.querySelector("#player-one .edit-name"),
+    buttonPlayerTwo: document.querySelector("#player-two .edit-name"),
+    inputNameOne: document.querySelector(".input-name-one"),
+    inputNameTwo: document.querySelector(".input-name-two")
+    
   }
 
   UI.dialogClose.addEventListener("click", () => UI.dialogBox.close());
-  UI.changeNameOne.addEventListener("click", () => UI.dialogOne.showModal());
-  UI.changeNameTwo.addEventListener("click", () => UI.dialogTwo.showModal());
+  UI.buttonPlayerOne.addEventListener("click", () => UI.dialogPlayerOne.showModal());
+  UI.buttonPlayerTwo.addEventListener("click", () => UI.dialogPlayerTwo.showModal());
+  UI.dialogPlayerOne.addEventListener("close", () => UI.dialogPlayerOne.returnValue === "confirm" ? updateName(0) : null)
+  UI.dialogPlayerTwo.addEventListener("close", () => UI.dialogPlayerTwo.returnValue === "confirm" ? updateName(1) : null)
 
   function renderBoard(){
     UI.gameBox.textContent = ''
@@ -164,25 +181,32 @@ const DisplayController = (() => {
             newSpot.textContent = "O"
             newSpot.style.opacity = 0.2
           }
-        //newSpot.textContent = `Player ${GameController.getCurrentPlayerIndex()}`
         }
       })
       newSpot.addEventListener("mouseleave", () => {
-        if (newSpot.className === "hover-player-one" | newSpot.className === "hover-player-two") {
+        if (newSpot.className === "hover-player-one" || newSpot.className === "hover-player-two") {
           newSpot.textContent = ''
           newSpot.classList.remove("hover-player-one")
           newSpot.classList.remove("hover-player-two")
           newSpot.classList.add("empty-spot")
           newSpot.style.opacity = 1
         }
-        //newSpot.textContent = ''
       })
       newSpot.addEventListener("click", () => {
         GameController.makeMove(i, GameController.getPlayers()[GameController.getCurrentPlayerIndex()])
       })
       UI.gameBox.append(newSpot)
     }
-    UI.playerDisplay.textContent = `Player ${GameController.getCurrentPlayerIndex() + 1}`
+  }
+
+  function updateName(index){
+    if (index === 0){
+      GameController.getPlayers()[index].changeName(UI.inputNameOne.value);
+    } else if (index === 1){
+      GameController.getPlayers()[index].changeName(UI.inputNameTwo.value);
+    }
+    updatePlayerCards()
+
   }
 
   function openGameDialog(text){
@@ -190,9 +214,11 @@ const DisplayController = (() => {
     UI.dialogBox.showModal()
   }
 
-  function updateScore(){
+  function updatePlayerCards(){
     UI.playerOneScore.textContent = GameController.getPlayers()[0].getScore(),
-    UI.playerTwoScore.textContent = GameController.getPlayers()[1].getScore()
+    UI.playerTwoScore.textContent = GameController.getPlayers()[1].getScore(),
+    UI.playerOneName.textContent = GameController.getPlayers()[0].getName(),
+    UI.playerTwoName.textContent = GameController.getPlayers()[1].getName()
   }
 
   
@@ -200,7 +226,7 @@ const DisplayController = (() => {
   renderBoard()
   
   return {
-    updateScore,
+    updatePlayerCards,
     openGameDialog,
     renderBoard,
   }

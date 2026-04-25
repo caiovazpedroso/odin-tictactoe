@@ -110,6 +110,7 @@ const GameController = (() => {
     if (checkTie()) return
     if (checkWin(players[currentPlayerIndex])) return
     currentPlayerIndex = 1 - currentPlayerIndex;
+    Gameboard.getPlayers[0].changeName()
   }
 
   function resetGame(){
